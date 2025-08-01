@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Football Play Tracker</title>
+<style>
+body { font-family: Arial; padding: 10px; background: #f0f0f0; }
+.player {
+background: white; border-radius: 8px; margin: 5px 0;
+padding: 10px; display: flex; flex-direction: column;
+box-shadow: 0 0 5px #aaa;
+}
+.topRow { display: flex; justify-content: space-between; align-items: center; }
+.in { background: #d4fcd4; }
+.done { background: #ffdddd; }
+input { width: 90px; margin-right: 5px; }
+button { margin: 3px 0; }
+#addPlayBtn {
+position: sticky; top: 0; background: #008CBA; color: white;
+font-size: 18px; padding: 10px; border: none; border-radius: 6px;
+width: 100%; margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<h2>📋 Football Play Tracker</h2>
+<button id="addPlayBtn" onclick="addPlayToAll()">➕ Add 1 Play to All In-Game</button>
+<div id="players"></div>
+
+<script>
+const requiredPlays = 4;
+const playerCount = 30;
+let players = [];
+
+for (let i = 1; i <= playerCount; i++) {
+players.push({ name: `Player ${i}`, jersey: i, plays: 0, inGame: false });
+}
+
+function renderPlayers() {
+const container = document.getElementById('players');
+container.innerHTML = '';
+
+players.forEach((p, index) => {
+const div = document.createElement('div');
+div.className = 'player';
+if (p.inGame) div.classList.add('in');
+if (p.plays >= requiredPlays) div.classList.add('done');
+
+div.innerHTML = `
+<div class="topRow">
+<div>
+<input type="text" value="${p.name}" onchange="updateName(${index}, this.value)" />
+<input type="number" value="${p.jersey}" onchange="updateJersey(${index}, this.value)" />
+</div>
+<div>
+<strong>Plays: ${p.plays}</strong>
+</div>
+</div>
+<div class="topRow">
+<button onclick="toggleInGame(${index})">${p.inGame ? 'Sub Out' : 'Sub In'}</button>
+</div>
+`;
+
+container.appendChild(div);
+});
+}
+
+function updateName(index, value) {
+players[index].name = value;
+}
+
+function updateJersey(index, value) {
+players[index].jersey = value;
+}
+
+function toggleInGame(index) {
+const inCount = players.filter(p => p.inGame).length;
+if (!players[index].inGame && inCount >= 11) {
+alert("Only 11 players can be on the field at once!");
+return;
+}
+players[index].inGame = !players[index].inGame;
+renderPlayers();
+}
+
+function addPlayToAll() {
+players.forEach(p => {
+if (p.inGame) p.plays++;
+});
+renderPlayers();
+}
+
+renderPlayers();
+</script>
+
+</body>
+</html>
